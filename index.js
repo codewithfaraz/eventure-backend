@@ -22,6 +22,9 @@ mongoose
 
 /////----------------routes
 //event routes
+app.get("/", (req, res) => {
+  return res.send("hi from backend");
+});
 app.post("/api/add-event", eventControllers.addEvent);
 app.get("/api/get-events", eventControllers.getEvents);
 app.delete("/api/delete-event", eventControllers.deleteEvent);
