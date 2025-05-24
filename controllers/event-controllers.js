@@ -132,7 +132,7 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
-const stripe = Stripe(process.env.STRIPE_KEY); // Put your actual secret key here
+const stripe = Stripe(process.env.STRIPE); // Put your actual secret key here
 
 exports.createPaymentIntent = async (req, res) => {
   try {
