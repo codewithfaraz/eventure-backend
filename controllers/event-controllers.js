@@ -1,4 +1,6 @@
 const Event = require("../modals/event-schema");
+const Booking = require("../modals/booking-schema");
+const Stripe = require("stripe");
 exports.addEvent = async (req, res) => {
   try {
     console.log(req.body);
@@ -37,6 +39,8 @@ exports.deleteEvent = async (req, res) => {
         message: "Event not found",
       });
     }
+    // Delete all bookings associated with this event
+    await Booking.deleteMany({ eventId: req.query.id });
     return res.status(200);
   } catch (err) {
     console.log(err);
@@ -125,5 +129,23 @@ exports.getAllEvents = async (req, res) => {
     return res.status(500).json({
       message: "Internal server error",
     });
+  }
+};
+
+const stripe = Stripe(process.env.STRIPE_KEY); // Put your actual secret key here
+
+exports.createPaymentIntent = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    console.log(amount);
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount, // in cents e.g., $10 = 1000
+      currency: "usd",
+      automatic_payment_methods: { enabled: true },
+    });
+
+    res.send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
